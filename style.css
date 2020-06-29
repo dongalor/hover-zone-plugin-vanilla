@@ -4,6 +4,8 @@ body {
 }
 
 .hz {
+    border: 2px solid black;
+    margin-bottom: 10px;
     width: 300px;
     height: 100px;
     line-height: 100px;
@@ -11,8 +13,8 @@ body {
     text-align: center;
     color: #fff;
     font-size: 2em;
-    display: inline-block;
-    transition: transform 2s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+    display: block;
+    transition: transform 4s cubic-bezier(0.6, -0.28, 0.735, 0.045);
 }
 
 .hz:hover {
@@ -20,8 +22,30 @@ body {
 }
 
 .hz.initialized {
-    transform: translateY(10px);
+    transform: scaleY(0.9) scaleX(0.9);
+    
 }
+
+.hz.x1 {
+    background: linear-gradient(to right, #FFC0CB 30%, #00FFFF 70%);
+}
+
+.hz.x2 {
+    background: linear-gradient(90deg, #00FFFF, #FFC0CB, #00FFFF);
+
+}
+
+.hz.x3 {
+    background: linear-gradient(to left, #FFC0CB 30%, #00FFFF 70%);
+}
+
+/* .hz.y1 {
+    background: linear-gradient(to top, #FFC0CB 50%, #00FFFF 50%);
+}
+
+.hz.y2 {
+    background: linear-gradient(to top, #00FFFF 50%, #FFC0CB 50%);
+} */
 
 #container {
     width: 610px;

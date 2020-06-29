@@ -25,10 +25,10 @@
       selector: "hz",
       horizontal: true,
       vertical: false,
-      number: 3,
+      zones: 2,
       initClass: "initialized",
-      callbackBefore: function () {},
-      callbackAfter: function () {},
+      callbackBefore: function () { },
+      callbackAfter: function () { },
     };
 
     //////////////////////////////
@@ -123,6 +123,8 @@
       // Merge user options with defaults
       settings = extend(defaults, options || {});
 
+      this.settings = settings;
+
       this.selector = document.querySelector('.' + options.selector_name);
 
       this.zone = "";
@@ -155,23 +157,31 @@
       var rw = parseInt(rect.width);
       var rh = parseInt(rect.height);
 
-      var xpart = parseInt(rw / x);
-      var ypart = parseInt(rh / y);
+      var xpart = parseInt(rw - x);
+      var ypart = parseInt(rh - y);
 
-      var xzone = "";
-      var yzone = "";
+      var xzone;
+      var yzone;
 
-      if (xpart > 2) {
-        xzone = "left";
-      } else { 
-        xzone = "right";
+      for (let i = 1; i <= HoverZone.settings.zones; i++) {
+        if (xzone == undefined) {
+          if (xpart < (rw / HoverZone.settings.zones) * i) {
+            // console.log((rw / HoverZone.settings.zones) * i);
+            xzone = "x" + (HoverZone.settings.zones - i + 1);
+          } 
+        }
       }
+
+      for (let j = 1; j <= 2; j++) {
+        if (yzone == undefined) {
+          if (ypart < (rh / 2) * j) {
+            // console.log((rw / HoverZone.settings.zones) * i);
+            yzone = "y" + (3 - j);
+          }
+        }
+      }
+
       
-      if (ypart > 2) {
-        yzone = "top";
-      } else {
-        yzone = "bottom";
-      }
       
       var result = {
         xzone,
@@ -184,6 +194,25 @@
 
       HoverZone.logMe(result);
 
+      "x1 x2 x3 x4 x5".split(" ").forEach((c) => {
+        if (c != xzone) {
+          e.srcElement.classList.remove(c);
+        } else { 
+          if (!e.srcElement.classList.contains(xzone)) {
+            e.srcElement.classList.add(xzone);
+          }
+        }
+      });
+      "y1 y2".split(" ").forEach((c) => {
+        if (c != yzone) {
+          e.srcElement.classList.remove(c);
+        } else {
+          if (!e.srcElement.classList.contains(yzone)) {
+            e.srcElement.classList.add(yzone);
+          }
+        }
+      });
+
       return result;
     };
 
@@ -192,8 +221,9 @@
       if (message.x) {
         output =
           message.x + ":" + message.y + ":" + message.rw + ":" + message.rh;
+        output += message.xzone + ":" + message.yzone;
       }
-      console.log(message);
+      
       var header = document.createElement("div");
       header.style.position = 'absolute';
       header.style.bottom = 0;
@@ -201,6 +231,7 @@
 
       header.style.color = 'red';
       header.innerHTML = "Hor:" + message.xzone + " Vert: " + message.yzone;
+
       
       this.log_container.innerHTML = output + "\n";
       this.log_container.appendChild(header);
