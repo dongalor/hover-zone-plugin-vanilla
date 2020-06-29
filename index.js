@@ -1,99 +1,111 @@
-( function( root, factory ) {
+(function (root, factory) {
+  var pluginName = "HoverZone";
 
-    var pluginName = 'PluginNameHere';
+  if (typeof define === "function" && define.amd) {
+    define([], factory(pluginName));
+  } else if (typeof exports === "object") {
+    module.exports = factory(pluginName);
+  } else {
+    root[pluginName] = factory(pluginName);
+  }
+})(this, function (HoverZone) {
+  "use strict";
 
-    if ( typeof define === 'function' && define.amd ) {
-        define( [], factory( pluginName ) );
-    } else if ( typeof exports === 'object' ) {
-        module.exports = factory( pluginName );
-    } else {
-        root[ pluginName ] = factory( pluginName );
+  var log_div = document.getElementById("log");
+
+  if (!log_div) {
+    log_div = document.createElement("div");
+    log_div.id = "log";
+    document.body.appendChild(log_div);
+    console.log("you don't have log container, created for you >:(");
+  } else { 
+    console.log('you have log container, nice');
+  }
+
+  var defaults = {
+    selector: ".hover-zone",
+    horizontal: true,
+    vertical: false,
+    log_container: log_div,
+    number: 3,
+  };
+  /**
+   * Merge defaults with user options
+   * @param {Object} defaults Default settings
+   * @param {Object} options User options
+   */
+  var extend = function (target, options) {
+    var prop,
+      extended = {};
+    for (prop in defaults) {
+      if (Object.prototype.hasOwnProperty.call(defaults, prop)) {
+        extended[prop] = defaults[prop];
+      }
     }
-}( this, function( pluginName ) {
+    for (prop in options) {
+      if (Object.prototype.hasOwnProperty.call(options, prop)) {
+        extended[prop] = options[prop];
+      }
+    }
+    return extended;
+  };
 
-    'use strict';
-
-    var defaults = {
-        selector: '.yourSelector',
-        someDefaultOption: 'foo',
-        classToAdd: "new-class-name"
-    };
-    /**
-     * Merge defaults with user options
-     * @param {Object} defaults Default settings
-     * @param {Object} options User options
-     */
-    var extend = function( target, options ) {
-        var prop, extended = {};
-        for ( prop in defaults ) {
-            if ( Object.prototype.hasOwnProperty.call( defaults, prop ) ) {
-                extended[ prop ] = defaults[ prop ];
-            }
-        }
-        for ( prop in options ) {
-            if ( Object.prototype.hasOwnProperty.call( options, prop ) ) {
-                extended[ prop ] = options[ prop ];
-            }
-        }
-        return extended;
-    };
-
-    /**
+  /**
      * Helper Functions
-     @private
+     @public
      */
-    var privateFunction = function() {
-        // Helper function, not directly acessible by instance object
-    };
+  var logMe = function () {
+    let date = new Date();
+    this.log_container.innerHTML += date.getTime() + " " + message + "<br/>";
+  };
 
-    /**
-     * Plugin Object
-     * @param {Object} options User options
-     * @constructor
-     */
-    function Plugin( options ) {
-        this.options = extend( defaults, options );
-        this.init(); // Initialization Code Here
-    }
+  /**
+   * Plugin Object
+   * @param {Object} options User options
+   * @constructor
+   */
+  function HoverZone(options) {
+    this.options = extend(defaults, options);
+    this.init(); // Initialization Code Here
+  }
 
-    /**
-     * Plugin prototype
-     * @public
-     * @constructor
-     */
-    Plugin.prototype = {
-        init: function() {
-            // find all matching DOM elements.
-            // makes `.selectors` object available to instance.
-            this.selectors = document.querySelectorAll( this.options.selector )
-            for ( var i = 0; i < this.selectors.length; i++ ) {
-                var selector = this.selectors[ i ]
-                    // Do something w/ each matched selector node.
-                selector.classList.add( this.options.classToAdd )
-                    // do something
-            }
-        }, // #! init
-        destroy: function() {
-            // Remove any event listeners and undo any "init" actions here...
-        },
-        doSomething: function( someData ) {
-                console.log( someData )
-            } // #! doSomething
-    };
-    return Plugin;
-} ) );
-
-
-/**************
-    EXAMPLE:
-**************/
-
-//// create new Plugin instance
-// var pluginInstance = new PluginNameHere({
-//     selector: ".box",
-//     someDefaultOption: 'foo2',
-//     classToAdd: "custom-new-class-name",
-// })
-
-//// access public plugin methods
-// pluginInstance.doSomething("Doing Something Else")
+  /**
+   * Plugin prototype
+   * @public
+   * @constructor
+   */
+  HoverZone.prototype = {
+    getPosition: function (e) {
+      var rect = e.target.getBoundingClientRect();
+      var x = e.clientX - rect.left;
+      var y = e.clientY - rect.top;
+      this.self.logMe({ x, y });
+      return {
+        x,
+        y,
+      };
+    },
+    logMe: function (message) {
+      
+    },
+    init: function () {
+      // find all matching DOM elements.
+      // makes `.selectors` object available to instance.
+      this.self = this;
+      this.log_container = document.getElementById(
+        this.options.log_container_name
+      );
+      this.selectors = document.querySelectorAll(this.options.selector);
+      for (var i = 0; i < this.selectors.length; i++) {
+        var el = this.selectors[i];
+        // Do something w/ each matched selector node.
+        el.addEventListener("mousemove", this.getPosition);
+        this.logMe(
+          "mousemove listener added to #" + el.getAttribute("id")
+        );
+        // do something
+      }
+    } // #! init
+  };
+  return HoverZone;
+});
