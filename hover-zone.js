@@ -11,9 +11,6 @@
   function (root) {
     "use strict";
 
-    //////////////////////////////
-    // Variables
-    //////////////////////////////
     var HoverZone = {};
 
     var supports = !!document.querySelector && !!root.addEventListener; // Feature test
@@ -31,9 +28,7 @@
       callbackAfter: function () { },
     };
 
-    //////////////////////////////
     // Private Functions
-    //////////////////////////////
 
     /**
      * A simple forEach() implementation for Arrays, Objects and NodeLists
@@ -89,9 +84,6 @@
       // If plugin isn't already initialized, stop
       if (!settings) return;
 
-      // Remove init class for conditional CSS
-      document.documentElement[selector].remove(settings.initClass);
-
       // @todo Undo any other init functions...
 
       // Remove event listeners
@@ -140,6 +132,7 @@
         var el = this.selectors[i];
         // Do something w/ each matched selector node.
         el.addEventListener("mousemove", this.getPosition);
+        el.addEventListener("mouseleave", this.mouseleave);
         // Add class to HTML element to activate conditional CSS
         el.classList.add(settings.initClass);
 
@@ -148,39 +141,76 @@
         );
         // do something
       }
+
+      document.getElementById('container').addEventListener("mouseleave", this.mouseLeave);
     };
 
+    HoverZone.mouseLeave = function (e) {
+      "x1 x2 x3 x4 x5 y1 y2".split(" ").forEach((c) => {
+        var el = document.getElementsByClassName(c)[0];
+        if (el) { 
+          el.classList.remove(c);
+        }
+      });
+    };
     HoverZone.getPosition = function (e) {
+      // parent container
       var rect = e.target.getBoundingClientRect();
-      var x = e.clientX - rect.left;
-      var y = e.clientY - rect.top;
+      
+      var x = parseInt(e.clientX - rect.left);
+      var y = parseInt(e.clientY - rect.top);
+      
+      if (x < 0) x = 1;
+      if (y < 0) y = 1;
+
       var rw = parseInt(rect.width);
       var rh = parseInt(rect.height);
 
-      var xpart = parseInt(rw - x);
-      var ypart = parseInt(rh - y);
+      var xblock = rect.width / HoverZone.settings.hzones;
+      var yblock = rect.height / HoverZone.settings.vzones;
+      
+
+      var xpart = parseInt(rw / x);
+      var ypart = parseInt(rh / y);
 
       var xzone;
       var yzone;
 
-      for (let i = 1; i <= HoverZone.settings.zones; i++) {
-        if (xzone == undefined) {
-          if (xpart < (rw / HoverZone.settings.zones) * i) {
-            // console.log((rw / HoverZone.settings.zones) * i);
-            xzone = "x" + (HoverZone.settings.zones - i + 1);
-          } 
-        }
+
+      
+      var compareX = rw;
+      
+      //console.log("X comparison:");
+      for (let i = HoverZone.settings.hzones; i >= 1; i--) {
+        if (x <= compareX) {
+          
+          // console.log((rw / HoverZone.settings.zones) * i);
+          xzone = "x" + i;
+        } 
+        
+        //console.log({ x, compareX, xzone, xblock });
+        compareX -= xblock;
+
+        
+
       }
 
-      for (let j = 1; j <= 2; j++) {
-        if (yzone == undefined) {
-          if (ypart < (rh / 2) * j) {
-            // console.log((rw / HoverZone.settings.zones) * i);
-            yzone = "y" + (3 - j);
-          }
+      var compareY = rh;
+
+      //console.log("Y comparison:");
+      for (let j = HoverZone.settings.vzones; j >= 1; j--) {
+        if (y <= compareY) {
+          // console.log((rw / HoverZone.settings.zones) * i);
+          yzone = "y" + j;
         }
+
+        //console.log({ y, compareY, yzone, yblock });
+
+        compareY -= yblock;
       }
 
+      
+      // console.log({ xblock, yblock, xzone, yzone });
       
       
       var result = {
@@ -221,7 +251,7 @@
       if (message.x) {
         output =
           message.x + ":" + message.y + ":" + message.rw + ":" + message.rh;
-        output += message.xzone + ":" + message.yzone;
+        output += " " + message.xzone + ":" + message.yzone;
       }
       
       var header = document.createElement("div");

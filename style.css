@@ -6,15 +6,19 @@ body {
 .hz {
     border: 2px solid black;
     margin-bottom: 10px;
-    width: 300px;
-    height: 100px;
-    line-height: 100px;
+    width: 400px;
+    height: 300px;
+    line-height: 300px;
     background-color: indianred;
     text-align: center;
     color: #fff;
     font-size: 2em;
     display: block;
     transition: transform 4s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+    position: relative;
+    background-image: url(https://baconmockup.com/400/300);
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .hz:hover {
@@ -22,30 +26,70 @@ body {
 }
 
 .hz.initialized {
-    transform: scaleY(0.9) scaleX(0.9);
-    
-}
-
-.hz.x1 {
-    background: linear-gradient(to right, #FFC0CB 30%, #00FFFF 70%);
-}
-
-.hz.x2 {
-    background: linear-gradient(90deg, #00FFFF, #FFC0CB, #00FFFF);
+    /* transform: translateX(90pt) */
 
 }
 
-.hz.x3 {
-    background: linear-gradient(to left, #FFC0CB 30%, #00FFFF 70%);
+.hz.x1::before {
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 33%;
+    position: absolute;
+    content: ' ';
+    /* background-image: linear-gradient(to left, #c92984, #44fa17); */
+    background-color: indianred;
+    opacity: .3;
 }
 
-/* .hz.y1 {
-    background: linear-gradient(to top, #FFC0CB 50%, #00FFFF 50%);
+.hz.x2::before {
+    top: 0;
+    right: 33%;
+    height: 100%;
+    width: 33%;
+    position: absolute;
+    content: ' ';
+    /* background-image: linear-gradient(to left, #c92984, #44fa17, #c92984); */
+    background-color: indianred;
+    opacity: .3;
+    /* background-image: linear-gradient(to right, rgba(245, 70, 6, 0.6) 33%, rgba(99, 227, 48, 0.5) 33%, rgba(245, 70, 6, 0.6) 33%); */
+
 }
 
-.hz.y2 {
-    background: linear-gradient(to top, #00FFFF 50%, #FFC0CB 50%);
-} */
+.hz.x3::before {
+    top: 0;
+    right: 0%;
+    height: 100%;
+    width: 33%;
+    position: absolute;
+    content: ' ';
+    /* background-image: linear-gradient(to right, #c92984, #44fa17); */
+    background-color: indianred;
+    opacity: .3;
+}
+
+.hz.y1::after {
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    content: ' ';
+    /* background-image: linear-gradient(to bottom, #44fa17, #9a0c5c); */
+    background-color: #000;
+    opacity: .2;
+}
+
+.hz.y2::after {
+    left: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    content: ' ';
+    background-color: #000;
+    opacity: .2;
+}
 
 #container {
     width: 610px;

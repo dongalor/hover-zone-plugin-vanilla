@@ -1,7 +1,8 @@
 var hoverZone = HoverZone.init({
   selector_name: "hz",
   horizontal: true,
+  hzones: 3,
   vertical: false,
-  log_container_name: 'log',
-  zones: 3
+  vzones: 1,
+  log_container_name: 'log'
 });
